@@ -4,6 +4,9 @@ export default class Address extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
+  @column({ columnName: 'customer_id' })
+  declare customer: number
+
   @column()
   declare street: string
 
