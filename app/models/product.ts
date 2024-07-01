@@ -15,4 +15,7 @@ export default class Product extends BaseModel {
 
   @column()
   declare category: string
+
+  @column()
+  declare proce: number
 }

@@ -10,6 +10,7 @@ export default class extends BaseSchema {
       table.text('description').nullable()
       table.integer('stock').unsigned()
       table.string('category')
+      table.decimal('price').notNullable()
     })
   }
 
