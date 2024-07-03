@@ -5,12 +5,10 @@ import Auth from '../auth/jwt.js'
 export default class AuthMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     const { authorization } = ctx.request.headers()
-    if (!authorization) {
-      return ctx.response.unauthorized()
-    } 
-    
-    if (Auth.validateToken(authorization!)) {
-      return await next()
+    if (Boolean(authorization) && Auth.validateToken(authorization!)) {
+      return next()
     }
+
+    return ctx.response.unauthorized()
   }
 }
