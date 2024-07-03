@@ -8,7 +8,11 @@ export default class CustomersController {
    * Display a list of resource
    */
   async index({}: HttpContext) {
-    const customers = await Customer.query().orderBy('id', 'asc')
+    const customers = await Customer
+      .query()
+      .select('name', 'cpf')
+      .orderBy('id', 'asc')
+
     return customers
   }
 
@@ -32,7 +36,10 @@ export default class CustomersController {
   async show({ params }: HttpContext) {
     const { id, date } = params
 
-    const customer = await Customer.findBy('id', id)
+    const customer = await Customer
+      .query()
+      .select('name', 'cpf')
+      .where('id', id)
 
     if (!date) {
       const sales = await Sale
