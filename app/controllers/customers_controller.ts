@@ -74,12 +74,10 @@ export default class CustomersController {
    */
   async update({ params, request }: HttpContext) {
     const { id } = params
-    const customer = await Customer.findBy('id', id)
-
-    customer!.name = request.all().name || customer!.name
-    customer!.cpf = request.all().cpf || customer!.cpf
-
-    await customer?.save()
+    const customer = await Customer
+      .query()
+      .where('id', id)
+      .update(request.body())
 
     return customer
   }
