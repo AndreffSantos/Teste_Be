@@ -17,5 +17,5 @@ export default class Product extends BaseModel {
   declare category: string
 
   @column()
-  declare proce: number
+  declare price: number
 }
