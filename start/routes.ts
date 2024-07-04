@@ -11,6 +11,7 @@ import CustomersController from '#controllers/customers_controller'
 import UsersController from '#controllers/users_controller'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import ProductsController from '#controllers/products_controller'
 
 router.get('/', async () => {
   return {
@@ -28,3 +29,10 @@ router.get('/customer/:id/:date?', [CustomersController, 'show']).use(middleware
 router.put('/customer/:id/', [CustomersController, 'update']).use(middleware.auth())
 router.post('/customers', [CustomersController, 'store']).use(middleware.auth())
 router.delete('/customer/:id', [CustomersController, 'destroy'])
+
+// Products
+router.get('/products', [ProductsController, 'index']).use(middleware.auth())
+router.get('/product/:id', [ProductsController, 'show']).use(middleware.auth())
+router.post('/product', [ProductsController, 'store']).use(middleware.auth())
+router.put('/product/:id', [ProductsController, 'update']).use(middleware.auth())
+router.delete('/product/:id', [ProductsController, 'destroy']).use(middleware.auth())
