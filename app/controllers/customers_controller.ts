@@ -1,6 +1,7 @@
+import Address from '#models/address'
 import Customer from '#models/customer'
 import Sale from '#models/sale'
-import { storeCustomerValidator } from '#validators/customer'
+import { storeCustomerValidator, updateCustomerValidator } from '#validators/customer'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class CustomersController {
@@ -27,7 +28,23 @@ export default class CustomersController {
       cpf: payload.cpf
     })
 
-    return customer
+    if (Boolean(customer)) {
+      const address = await Address.create({
+        customer: customer.id,
+        apartment: payload.address.apartment,
+        city: payload.address.city,
+        neighborhood: payload.address.neighborhood,
+        number: payload.address.number,
+        postal_code: payload.address.postal_code,
+        state: payload.address.state,
+        street: payload.address.street,
+      })
+
+      return {
+        customer,
+        address
+      }
+    }
   }
 
   /**
@@ -40,6 +57,7 @@ export default class CustomersController {
       .query()
       .select('name', 'cpf')
       .where('id', id)
+    const address = await Address.findBy('customer_id', id)
 
     if (!date) {
       const sales = await Sale
@@ -49,6 +67,7 @@ export default class CustomersController {
       
       return {
         customer,
+        address,
         sales
       }
     } else {
@@ -64,6 +83,7 @@ export default class CustomersController {
 
       return {
         customer,
+        address,
         sales
       }
     }
@@ -73,11 +93,12 @@ export default class CustomersController {
    * Handle form submission for the edit action
    */
   async update({ params, request }: HttpContext) {
+    const payload  = await updateCustomerValidator.validate(request.body())
     const { id } = params
     const customer = await Customer
       .query()
       .where('id', id)
-      .update(request.body())
+      .update(payload)
 
     return customer
   }
