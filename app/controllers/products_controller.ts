@@ -1,5 +1,5 @@
 import Product from '#models/product'
-import { storeProductValidator } from '#validators/product'
+import { storeProductValidator, updateProductValidator } from '#validators/product'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class ProductsController {
@@ -54,10 +54,11 @@ export default class ProductsController {
    */
   async update({ params, request }: HttpContext) {
     const { id } = params
+    const payload = await updateProductValidator.validate(request.body())
     const product = await Product
       .query()
       .where('id', id)
-      .update(request.body())
+      .update(payload)
     return product
   }
 
