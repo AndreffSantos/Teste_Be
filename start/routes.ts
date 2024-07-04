@@ -29,7 +29,7 @@ router.get('/customers', [CustomersController, 'index']).use(middleware.auth())
 router.get('/customer/:id/:date?', [CustomersController, 'show']).use(middleware.auth())
 router.put('/customer/:id/', [CustomersController, 'update']).use(middleware.auth())
 router.post('/customer', [CustomersController, 'store']).use(middleware.auth())
-router.delete('/customer/:id', [CustomersController, 'destroy'])
+router.delete('/customer/:id', [CustomersController, 'destroy']).use(middleware.auth())
 
 // Products
 router.get('/products', [ProductsController, 'index']).use(middleware.auth())
