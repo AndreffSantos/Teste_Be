@@ -1,5 +1,6 @@
 import Address from '#models/address'
 import Customer from '#models/customer'
+import Phone from '#models/phone'
 import Sale from '#models/sale'
 import { storeCustomerValidator, updateCustomerValidator } from '#validators/customer'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -24,11 +25,15 @@ export default class CustomersController {
     const payload = await storeCustomerValidator.validate(request.all())
 
     const customer = await Customer.create({
-      name: payload.name,
-      cpf: payload.cpf
+      name: payload.user.name,
+      cpf: payload.user.cpf
     })
 
     if (Boolean(customer)) {
+      const phone = await Phone.create({
+        customer: customer.id,
+        phone: payload.phone.phone
+      })
       const address = await Address.create({
         customer: customer.id,
         apartment: payload.address.apartment,
@@ -42,6 +47,7 @@ export default class CustomersController {
 
       return {
         customer,
+        phone,
         address
       }
     }
@@ -58,6 +64,7 @@ export default class CustomersController {
       .select('name', 'cpf')
       .where('id', id)
     const address = await Address.findBy('customer_id', id)
+    const phone = await Phone.findBy('customer_id', id)
 
     if (!date) {
       const sales = await Sale
@@ -67,6 +74,7 @@ export default class CustomersController {
       
       return {
         customer,
+        phone,
         address,
         sales
       }
@@ -83,6 +91,7 @@ export default class CustomersController {
 
       return {
         customer,
+        phone,
         address,
         sales
       }
@@ -92,15 +101,15 @@ export default class CustomersController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request }: HttpContext) {
+  async update({ params, request, response }: HttpContext) {
     const payload  = await updateCustomerValidator.validate(request.body())
     const { id } = params
-    const customer = await Customer
-      .query()
-      .where('id', id)
-      .update(payload)
+    if (payload.user) await Customer.query().where('id', id).update(payload.user)
 
-    return customer
+    if (payload.address) await Address.query().where('customer_id', id).update(payload.address)
+    
+    if(payload.phone) await Phone.query().where('customer_id', id).update(payload.phone)
+    return response.ok({ message: 'OK' })
   }
 
   /**
