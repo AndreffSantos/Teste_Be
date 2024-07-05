@@ -22,16 +22,23 @@ export default class ProductsController {
   async store({ request }: HttpContext) {
     const payload = await storeProductValidator.validate(request.body())
 
-    const product = await Product.create({
-      name: payload.name,
-      description: payload.description,
-      category: payload.category,
-      price: payload.price,
-      stock: payload.stock,
-      isDeleted: false
-    })
+    const product = await Product.findBy('name', payload.name)
 
-    return product
+    if (product) {
+      product.stock += payload.stock
+      await product.save()
+      return product
+    } else {
+      const newProduct = await Product.create({
+        name: payload.name,
+        description: payload.description,
+        category: payload.category,
+        price: payload.price,
+        stock: payload.stock,
+        isDeleted: false
+      })
+      return newProduct
+    }
   }
 
   /**
